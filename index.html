@@ -344,6 +344,203 @@
 </style>
 </head>
 <body>
+  // ============================================
+// COMPLETE FIREWALL FOR AAHVANAM WORKER
+// Copy and paste this into your Worker
+// ============================================
+
+// BLOCKED IPs - Add malicious IPs here
+const BLOCKED_IPS = [
+  // "192.168.1.100",  // Example - uncomment and add IPs to block
+];
+
+// BLOCKED USER AGENTS - Bad bots
+const BLOCKED_BOTS = [
+  "AhrefsBot",
+  "SemrushBot", 
+  "MJ12bot",
+  "DotBot",
+  "MauiBot",
+  "BLEXBot",
+  "DataForSeoBot",
+  "GPTBot",
+  "CCBot",
+];
+
+// BLOCKED COUNTRIES - Add country codes to block (ISO 2-letter)
+const BLOCKED_COUNTRIES = [
+  // "RU",  // Russia - uncomment to block
+  // "CN",  // China
+  // "KP",  // North Korea
+];
+
+// RATE LIMITING - Requests per IP per minute
+const RATE_LIMIT = {
+  windowMs: 60000,  // 1 minute
+  maxRequests: 60,  // 60 requests per minute
+};
+
+// In-memory store for rate limiting (simple)
+let rateLimitStore = new Map();
+
+function isRateLimited(ip) {
+  const now = Date.now();
+  const windowStart = now - RATE_LIMIT.windowMs;
+  
+  // Clean old entries
+  for (let [key, timestamps] of rateLimitStore) {
+    rateLimitStore.set(key, timestamps.filter(t => t > windowStart));
+    if (rateLimitStore.get(key).length === 0) {
+      rateLimitStore.delete(key);
+    }
+  }
+  
+  // Get or create entry for this IP
+  let timestamps = rateLimitStore.get(ip) || [];
+  
+  // Remove old timestamps
+  timestamps = timestamps.filter(t => t > windowStart);
+  
+  // Check limit
+  if (timestamps.length >= RATE_LIMIT.maxRequests) {
+    return true;  // Rate limited!
+  }
+  
+  // Add current request
+  timestamps.push(now);
+  rateLimitStore.set(ip, timestamps);
+  return false;  // Allowed
+}
+
+// Check if IP is blocked
+function isIPBlocked(ip) {
+  return BLOCKED_IPS.includes(ip);
+}
+
+// Check if user agent is a bad bot
+function isBadBot(userAgent) {
+  if (!userAgent) return false;
+  return BLOCKED_BOTS.some(bot => userAgent.includes(bot));
+}
+
+// Check if country is blocked
+function isCountryBlocked(country) {
+  return BLOCKED_COUNTRIES.includes(country);
+}
+
+// BLOCK common attack paths
+function isAttackPath(url) {
+  const attackPaths = [
+    ".env",
+    "config.json",
+    "wp-admin",
+    "phpmyadmin", 
+    "xmlrpc.php",
+    "admin.php",
+    "login.php",
+    "backup.zip",
+    ".git",
+    "aws.yml",
+    "credentials",
+  ];
+  
+  const lowerUrl = url.toLowerCase();
+  return attackPaths.some(path => lowerUrl.includes(path));
+}
+
+// Security headers to add to every response
+const SECURITY_HEADERS = {
+  "X-Content-Type-Options": "nosniff",
+  "X-Frame-Options": "DENY",
+  "X-XSS-Protection": "1; mode=block",
+  "Referrer-Policy": "strict-origin-when-cross-origin",
+  "Content-Security-Policy": "default-src 'self'",
+  "Permissions-Policy": "geolocation=(), microphone=(), camera=()",
+};
+
+async function handleRequest(request) {
+  const url = new URL(request.url);
+  const ip = request.headers.get("CF-Connecting-IP") || 
+              request.headers.get("X-Forwarded-For") || 
+              "unknown";
+  const userAgent = request.headers.get("User-Agent") || "";
+  const country = request.headers.get("CF-IPCountry") || "";
+  
+  // ============================================
+  // FIREWALL RULES - Check in order
+  // ============================================
+  
+  // 1. Block specific IPs
+  if (isIPBlocked(ip)) {
+    console.log(`🚫 Blocked IP: ${ip}`);
+    return new Response("Access Denied", { status: 403 });
+  }
+  
+  // 2. Block bad bots
+  if (isBadBot(userAgent)) {
+    console.log(`🚫 Blocked Bot: ${userAgent} from ${ip}`);
+    return new Response("Access Denied", { status: 403 });
+  }
+  
+  // 3. Block specific countries (if not using Cloudflare's built-in firewall)
+  if (isCountryBlocked(country)) {
+    console.log(`🚫 Blocked Country: ${country} from ${ip}`);
+    return new Response("Access Denied", { status: 403 });
+  }
+  
+  // 4. Block attack paths
+  if (isAttackPath(url.pathname)) {
+    console.log(`🚫 Blocked Attack Path: ${url.pathname} from ${ip}`);
+    return new Response("Access Denied", { status: 403 });
+  }
+  
+  // 5. Rate limiting
+  if (isRateLimited(ip)) {
+    console.log(`🚫 Rate Limited: ${ip} (too many requests)`);
+    return new Response("Too Many Requests", { 
+      status: 429,
+      headers: { "Retry-After": "60" }
+    });
+  }
+  
+  // ============================================
+  // YOUR ORIGINAL WORKER CODE GOES HERE
+  // ============================================
+  
+  // Example response - REPLACE THIS with your actual website content
+  const html = `<!DOCTYPE html>
+<html>
+<head>
+    <title>Aahvanam</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+    <h1>Welcome to Aahvanam</h1>
+    <p>Your content here...</p>
+</body>
+</html>`;
+  
+  // Return response with security headers
+  return new Response(html, {
+    headers: {
+      "Content-Type": "text/html",
+      ...SECURITY_HEADERS,
+    }
+  });
+}
+
+// Main worker entry point
+export default {
+  async fetch(request, env, ctx) {
+    try {
+      return await handleRequest(request);
+    } catch (error) {
+      console.error(`🔥 Error: ${error.message}`);
+      return new Response("Internal Server Error", { status: 500 });
+    }
+  }
+};
 
 <nav>
   <div class="nav-logo">HOTEL <span>Aahvanam</span></div>
@@ -505,6 +702,205 @@
     `).join('');
   }
   showTab('biryani');
+
+   // ============================================
+// COMPLETE FIREWALL FOR AAHVANAM WORKER
+// Copy and paste this into your Worker
+// ============================================
+
+// BLOCKED IPs - Add malicious IPs here
+const BLOCKED_IPS = [
+  // "192.168.1.100",  // Example - uncomment and add IPs to block
+];
+
+// BLOCKED USER AGENTS - Bad bots
+const BLOCKED_BOTS = [
+  "AhrefsBot",
+  "SemrushBot", 
+  "MJ12bot",
+  "DotBot",
+  "MauiBot",
+  "BLEXBot",
+  "DataForSeoBot",
+  "GPTBot",
+  "CCBot",
+];
+
+// BLOCKED COUNTRIES - Add country codes to block (ISO 2-letter)
+const BLOCKED_COUNTRIES = [
+  // "RU",  // Russia - uncomment to block
+  // "CN",  // China
+  // "KP",  // North Korea
+];
+
+// RATE LIMITING - Requests per IP per minute
+const RATE_LIMIT = {
+  windowMs: 60000,  // 1 minute
+  maxRequests: 60,  // 60 requests per minute
+};
+
+// In-memory store for rate limiting (simple)
+let rateLimitStore = new Map();
+
+function isRateLimited(ip) {
+  const now = Date.now();
+  const windowStart = now - RATE_LIMIT.windowMs;
+  
+  // Clean old entries
+  for (let [key, timestamps] of rateLimitStore) {
+    rateLimitStore.set(key, timestamps.filter(t => t > windowStart));
+    if (rateLimitStore.get(key).length === 0) {
+      rateLimitStore.delete(key);
+    }
+  }
+  
+  // Get or create entry for this IP
+  let timestamps = rateLimitStore.get(ip) || [];
+  
+  // Remove old timestamps
+  timestamps = timestamps.filter(t => t > windowStart);
+  
+  // Check limit
+  if (timestamps.length >= RATE_LIMIT.maxRequests) {
+    return true;  // Rate limited!
+  }
+  
+  // Add current request
+  timestamps.push(now);
+  rateLimitStore.set(ip, timestamps);
+  return false;  // Allowed
+}
+
+// Check if IP is blocked
+function isIPBlocked(ip) {
+  return BLOCKED_IPS.includes(ip);
+}
+
+// Check if user agent is a bad bot
+function isBadBot(userAgent) {
+  if (!userAgent) return false;
+  return BLOCKED_BOTS.some(bot => userAgent.includes(bot));
+}
+
+// Check if country is blocked
+function isCountryBlocked(country) {
+  return BLOCKED_COUNTRIES.includes(country);
+}
+
+// BLOCK common attack paths
+function isAttackPath(url) {
+  const attackPaths = [
+    ".env",
+    "config.json",
+    "wp-admin",
+    "phpmyadmin", 
+    "xmlrpc.php",
+    "admin.php",
+    "login.php",
+    "backup.zip",
+    ".git",
+    "aws.yml",
+    "credentials",
+  ];
+  
+  const lowerUrl = url.toLowerCase();
+  return attackPaths.some(path => lowerUrl.includes(path));
+}
+
+// Security headers to add to every response
+const SECURITY_HEADERS = {
+  "X-Content-Type-Options": "nosniff",
+  "X-Frame-Options": "DENY",
+  "X-XSS-Protection": "1; mode=block",
+  "Referrer-Policy": "strict-origin-when-cross-origin",
+  "Content-Security-Policy": "default-src 'self'",
+  "Permissions-Policy": "geolocation=(), microphone=(), camera=()",
+};
+
+async function handleRequest(request) {
+  const url = new URL(request.url);
+  const ip = request.headers.get("CF-Connecting-IP") || 
+              request.headers.get("X-Forwarded-For") || 
+              "unknown";
+  const userAgent = request.headers.get("User-Agent") || "";
+  const country = request.headers.get("CF-IPCountry") || "";
+  
+  // ============================================
+  // FIREWALL RULES - Check in order
+  // ============================================
+  
+  // 1. Block specific IPs
+  if (isIPBlocked(ip)) {
+    console.log(`🚫 Blocked IP: ${ip}`);
+    return new Response("Access Denied", { status: 403 });
+  }
+  
+  // 2. Block bad bots
+  if (isBadBot(userAgent)) {
+    console.log(`🚫 Blocked Bot: ${userAgent} from ${ip}`);
+    return new Response("Access Denied", { status: 403 });
+  }
+  
+  // 3. Block specific countries (if not using Cloudflare's built-in firewall)
+  if (isCountryBlocked(country)) {
+    console.log(`🚫 Blocked Country: ${country} from ${ip}`);
+    return new Response("Access Denied", { status: 403 });
+  }
+  
+  // 4. Block attack paths
+  if (isAttackPath(url.pathname)) {
+    console.log(`🚫 Blocked Attack Path: ${url.pathname} from ${ip}`);
+    return new Response("Access Denied", { status: 403 });
+  }
+  
+  // 5. Rate limiting
+  if (isRateLimited(ip)) {
+    console.log(`🚫 Rate Limited: ${ip} (too many requests)`);
+    return new Response("Too Many Requests", { 
+      status: 429,
+      headers: { "Retry-After": "60" }
+    });
+  }
+  
+  // ============================================
+  // YOUR ORIGINAL WORKER CODE GOES HERE
+  // ============================================
+  
+  // Example response - REPLACE THIS with your actual website content
+  const html = `<!DOCTYPE html>
+<html>
+<head>
+    <title>Aahvanam</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+    <h1>Welcome to Aahvanam</h1>
+    <p>Your blocked cause u trynna hack my website</p>
+</body>
+</html>`;
+  
+  // Return response with security headers
+  return new Response(html, {
+    headers: {
+      "Content-Type": "text/html",
+      ...SECURITY_HEADERS,
+    }
+  });
+}
+
+// Main worker entry point
+export default {
+  async fetch(request, env, ctx) {
+    try {
+      return await handleRequest(request);
+    } catch (error) {
+      console.error(`🔥 Error: ${error.message}`);
+      return new Response("Internal Server Error", { status: 500 });
+    }
+  }
+};
+
 </script>
 </body>
 </html>
