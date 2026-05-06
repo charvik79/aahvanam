@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Login - Aahvanam Hotel</title>
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #1a0a00 0%, #3a1f0a 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    padding: 20px;
+  }
+
+  .login-container {
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 24px;
+    padding: 48px;
+    width: 100%;
+    max-width: 400px;
+    border: 1px solid rgba(201,149,58,0.3);
+    text-align: center;
+  }
+
+  .logo h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    color: #E8B96A;
+    margin-bottom: 8px;
+  }
+
+  .logo p {
+    color: rgba(245,237,216,0.6);
+    margin-bottom: 32px;
+  }
+
+  .input-group {
+    margin-bottom: 20px;
+    text-align: left;
+  }
+
+  .input-group label {
+    display: block;
+    color: rgba(245,237,216,0.8);
+    margin-bottom: 8px;
+    font-size: 0.85rem;
+  }
+
+  .input-group input {
+    width: 100%;
+    padding: 14px 16px;
+    border-radius: 12px;
+    border: 1px solid rgba(201,149,58,0.3);
+    background: rgba(0,0,0,0.5);
+    color: #F5EDD8;
+    font-size: 1rem;
+  }
+
+  .input-group input:focus {
+    outline: none;
+    border-color: #E8B96A;
+  }
+
+  .login-btn {
+    width: 100%;
+    padding: 14px;
+    background: #8B1A1A;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-top: 10px;
+  }
+
+  .login-btn:hover {
+    background: #5C0E0E;
+  }
+
+  .error-msg {
+    background: rgba(198,40,40,0.2);
+    color: #ff8888;
+    padding: 12px;
+    border-radius: 8px;
+    margin-top: 15px;
+    font-size: 0.85rem;
+  }
+
+  .back-link {
+    display: block;
+    margin-top: 20px;
+    color: #E8B96A;
+    text-decoration: none;
+  }
+</style>
+</head>
+<body>
+<div class="login-container">
+  <div class="logo">
+    <h1>🔐 Admin Login</h1>
+    <p>Enter password to access admin panel</p>
+  </div>
+
+  <div class="input-group">
+    <label>🔒 Password</label>
+    <input type="password" id="adminPassword" placeholder="Enter admin password">
+  </div>
+
+  <button class="login-btn" onclick="checkPassword()">Login</button>
+  <div id="errorMsg" class="error-msg" style="display: none;"></div>
+  <a href="index.html" class="back-link">← Back to Website</a>
+</div>
+
+<script>
+const ADMIN_PASSWORD = "itismebro";
+
+function checkPassword() {
+  const password = document.getElementById('adminPassword').value;
+  const errorDiv = document.getElementById('errorMsg');
+  
+  if (password === ADMIN_PASSWORD) {
+    localStorage.setItem('adminLoggedIn', 'true');
+    window.location.href = 'index.html';
+  } else {
+    errorDiv.style.display = 'block';
+    errorDiv.innerHTML = '❌ Incorrect password! Access denied.';
+    document.getElementById('adminPassword').value = '';
+  }
+}
+
+document.getElementById('adminPassword').addEventListener('keypress', function(e) {
+  if (e.key === 'Enter') {
+    checkPassword();
+  }
+});
+</script>
+</body>
+</html>

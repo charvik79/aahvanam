@@ -344,6 +344,11 @@
 </style>
 </head>
 <body>
+  <div id="adminPanelBtn" style="display: none; text-align: center; margin: 20px 0;">
+  <a href="admin-portal.html" style="background: linear-gradient(135deg, #8B1A1A, #5C0E0E); color: #E8B96A; padding: 12px 30px; border-radius: 40px; text-decoration: none; font-weight: bold; border: 1px solid #E8B96A; display: inline-block;">
+    👑 Admin Portal
+  </a>
+</div>
 
 <nav>
   <div class="nav-logo">HOTEL <span>Aahvanam</span></div>
@@ -472,6 +477,27 @@
   <div class="footer-copy">© 2025 Aahvanam Hotel. Authentic Since 1953.</div>
   <div><a href="order-online.html" style="color: var(--gold-light); text-decoration: none;">Order Online</a> | <a href="reservation.html" style="color: var(--gold-light); text-decoration: none;">Book a Table</a></div>
 </footer>
+<!-- Admin Portal Button - Only shows after login -->
+<div id="adminPortalBtn" style="display: none; text-align: center; margin: 20px 0;">
+  <a href="admin-portal.html" style="background: linear-gradient(135deg, #8B1A1A, #5C0E0E); color: #E8B96A; padding: 12px 30px; border-radius: 40px; text-decoration: none; font-weight: bold; border: 1px solid #E8B96A; display: inline-block;">
+    👑 Admin Portal
+  </a>
+  <button onclick="logout()" style="background: #555; color: white; padding: 12px 30px; border-radius: 40px; margin-left: 15px; border: none; cursor: pointer;">
+    🚪 Logout
+  </button>
+</div>
+
+<script>
+// Check if admin is logged in
+if (localStorage.getItem('adminLoggedIn') === 'true') {
+  document.getElementById('adminPortalBtn').style.display = 'block';
+}
+
+function logout() {
+  localStorage.removeItem('adminLoggedIn');
+  window.location.reload();
+}
+</script>
 
 <script>
   const menuData = {
@@ -505,6 +531,10 @@
     `).join('');
   }
   showTab('biryani');
+  // Check if admin is logged in
+if (localStorage.getItem('adminLoggedIn') === 'true') {
+  document.getElementById('adminPanelBtn').style.display = 'block';
+}
 </script>
 </body>
 </html>
