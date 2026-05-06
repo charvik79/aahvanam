@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Book a Table – Hotel Aahvanam</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Georgia', serif;
+    background: linear-gradient(135deg, #FAF6EE 0%, #F5EDD8 100%);
+    min-height: 100vh;
+    padding: 40px 24px;
+  }
+  .container { max-width: 600px; margin: 0 auto; }
+  .card {
+    background: white;
+    border-radius: 28px;
+    padding: 48px 40px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    border: 1px solid rgba(201,149,58,0.3);
+  }
+  h1 { font-family: 'Georgia', serif; font-size: 2rem; color: #5C0E0E; margin-bottom: 8px; }
+  h1 span { color: #C9953A; font-style: italic; }
+  .sub { color: #7A5C3A; font-style: italic; margin-bottom: 32px; padding-bottom: 16px; border-bottom: 1px solid #E8DCC8; }
+  .form-group { margin-bottom: 20px; }
+  label { display: block; font-size: 0.75rem; text-transform: uppercase; color: #7A5C3A; margin-bottom: 6px; font-weight: 600; letter-spacing: 1px; }
+  input, select, textarea {
+    width: 100%;
+    padding: 14px 18px;
+    border: 1.5px solid #E8DCC8;
+    border-radius: 60px;
+    font-size: 1rem;
+    background: #FAF6EE;
+  }
+  textarea { border-radius: 24px; resize: vertical; }
+  input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: #8B1A1A;
+    background: white;
+  }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .btn-submit {
+    width: 100%;
+    background: #8B1A1A;
+    color: #F5EDD8;
+    border: none;
+    padding: 16px;
+    border-radius: 60px;
+    font-size: 1rem;
+    text-transform: uppercase;
+    cursor: pointer;
+    font-weight: bold;
+    margin-top: 16px;
+  }
+  .btn-submit:hover { background: #5C0E0E; transform: translateY(-2px); }
+  .back-link { display: inline-block; margin-top: 24px; color: #C9953A; text-decoration: none; }
+  .message { margin-top: 20px; padding: 12px; border-radius: 12px; text-align: center; }
+  .availability-msg { margin-top: 8px; font-size: 0.85rem; padding: 8px; border-radius: 40px; text-align: center; }
+  @media (max-width: 550px) { .card { padding: 32px 24px; } .form-row { grid-template-columns: 1fr; gap: 0; } }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="card">
+    <h1>📅 Book a Table at <span>Aahvanam</span></h1>
+    <p class="sub">Reserve your seat for an authentic Hyderabadi feast</p>
+    
+    <form id="reservationForm" onsubmit="return false;">
+      <div class="form-row">
+        <div class="form-group">
+          <label>📅 Date</label>
+          <input type="date" id="resDate" required>
+        </div>
+        <div class="form-group">
+          <label>⏰ Time</label>
+          <select id="resTime" required>
+            <option value="">Select Time</option>
+            <option value="12:00 PM">12:00 PM</option>
+            <option value="12:30 PM">12:30 PM</option>
+            <option value="1:00 PM">1:00 PM</option>
+            <option value="1:30 PM">1:30 PM</option>
+            <option value="7:00 PM">7:00 PM</option>
+            <option value="7:30 PM">7:30 PM</option>
+            <option value="8:00 PM">8:00 PM</option>
+            <option value="8:30 PM">8:30 PM</option>
+            <option value="9:00 PM">9:00 PM</option>
+            <option value="9:30 PM">9:30 PM</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>👥 Guests</label>
+          <select id="resGuests" required>
+            <option value="">Number of Guests</option>
+            <option value="1">1 Guest</option><option value="2">2 Guests</option>
+            <option value="3">3 Guests</option><option value="4">4 Guests</option>
+            <option value="5">5 Guests</option><option value="6">6 Guests</option>
+            <option value="7">7 Guests</option><option value="8">8+ Guests</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>🏢 Floor</label>
+          <select id="resFloor" required>
+            <option value="">Select Floor</option>
+            <option value="Ground Floor (Street Style)">Ground Floor (Street Style)</option>
+            <option value="Third Floor AC (Premium)">Third Floor AC (Premium)</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>👤 Your Name</label>
+          <input type="text" id="resName" placeholder="Full name" required>
+        </div>
+        <div class="form-group">
+          <label>📞 Phone</label>
+          <input type="tel" id="resPhone" placeholder="+91 XXXXX XXXXX" required>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>📝 Special Requests (Optional)</label>
+        <textarea id="resRequests" rows="2" placeholder="Any allergies, occasions, or preferences..."></textarea>
+      </div>
+      <div id="availabilityMsg" class="availability-msg"></div>
+      <button type="button" class="btn-submit" id="bookBtn">✅ Confirm Reservation</button>
+      <div id="resMessage" class="message"></div>
+    </form>
+    <a href="index.html" class="back-link">← Back to Aahvanam Hotel</a>
+  </div>
+</div>
+
+<script>
+  // Get reservations from localStorage
+  function getReservations() {
+    const stored = localStorage.getItem('aahvanam_reservations');
+    return stored ? JSON.parse(stored) : [];
+  }
+  
+  // Save reservation to localStorage
+  function saveReservation(reservation) {
+    const reservations = getReservations();
+    reservation.id = Date.now();
+    reservation.created_at = new Date().toISOString();
+    reservations.push(reservation);
+    localStorage.setItem('aahvanam_reservations', JSON.stringify(reservations));
+    return true;
+  }
+  
+  // Check if time slot is available
+  function checkAvailability(date, time) {
+    const reservations = getReservations();
+    return !reservations.some(r => r.date === date && r.time === time);
+  }
+  
+  // Set minimum date to today
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('resDate').value = today;
+  document.getElementById('resDate').min = today;
+  
+  // Update availability message
+  function updateAvailability() {
+    const date = document.getElementById('resDate').value;
+    const time = document.getElementById('resTime').value;
+    const msgDiv = document.getElementById('availabilityMsg');
+    
+    if (!date || !time) {
+      msgDiv.innerHTML = '';
+      return;
+    }
+    
+    const available = checkAvailability(date, time);
+    if (available) {
+      msgDiv.innerHTML = '✅ Time slot available!';
+      msgDiv.style.background = '#E8F5E9';
+      msgDiv.style.color = '#2e7d32';
+    } else {
+      msgDiv.innerHTML = '❌ This time is already booked. Please choose another.';
+      msgDiv.style.background = '#FFEBEE';
+      msgDiv.style.color = '#c62828';
+    }
+  }
+  
+  document.getElementById('resDate').addEventListener('change', updateAvailability);
+  document.getElementById('resTime').addEventListener('change', updateAvailability);
+  
+  // Handle booking
+  document.getElementById('bookBtn').addEventListener('click', function() {
+    const name = document.getElementById('resName').value;
+    const phone = document.getElementById('resPhone').value;
+    const date = document.getElementById('resDate').value;
+    const time = document.getElementById('resTime').value;
+    const guests = document.getElementById('resGuests').value;
+    const floor = document.getElementById('resFloor').value;
+    const requests = document.getElementById('resRequests').value || '';
+    const msgDiv = document.getElementById('resMessage');
+    
+    if (!name || !phone || !date || !time || !guests || !floor) {
+      msgDiv.innerHTML = '<span style="color:#c62828;">⚠️ Please fill all fields.</span>';
+      return;
+    }
+    
+    if (!checkAvailability(date, time)) {
+      msgDiv.innerHTML = '<span style="color:#c62828;">❌ This time slot is already booked. Please choose another time.</span>';
+      return;
+    }
+    
+    const reservation = { name, phone, date, time, guests: parseInt(guests), floor, requests };
+    saveReservation(reservation);
+    
+    msgDiv.innerHTML = '<span style="color:#2e7d32;">✅ Reservation confirmed! We\'ll call you shortly.</span>';
+    alert(`✅ Reservation Confirmed!\n\n${name}, your table for ${guests} guest(s) on ${date} at ${time} is booked.\nFloor: ${floor}\n\nWelcome to Aahvanam Hotel!`);
+    
+    document.getElementById('reservationForm').reset();
+    document.getElementById('resDate').value = today;
+    document.getElementById('availabilityMsg').innerHTML = '';
+    
+    setTimeout(() => msgDiv.innerHTML = '', 5000);
+  });
+</script>
+</body>
+</html>

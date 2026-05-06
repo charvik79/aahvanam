@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hotel Aahvanam – Authentic Hyderabadi Cuisine Since 1953</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --crimson: #8B1A1A;
+    --deep-crimson: #5C0E0E;
+    --gold: #C9953A;
+    --gold-light: #E8B96A;
+    --cream: #F5EDD8;
+    --warm-white: #FAF6EE;
+    --dark: #1A0A00;
+    --text-body: #3A1F0A;
+    --text-muted: #7A5C3A;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Cormorant Garamond', serif;
+    background: var(--warm-white);
+    color: var(--text-body);
+    overflow-x: hidden;
+  }
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 60px;
+    background: rgba(26,10,0,0.95);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(201,149,58,0.3);
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .nav-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem; font-weight: 900;
+    color: var(--gold-light);
+    letter-spacing: 2px;
+  }
+  .nav-logo span { color: var(--cream); font-style: italic; }
+  .nav-links { display: flex; gap: 28px; list-style: none; align-items: center; flex-wrap: wrap; }
+  .nav-links a {
+    color: rgba(245,237,216,0.8);
+    text-decoration: none; font-size: 0.8rem;
+    letter-spacing: 1.5px; text-transform: uppercase;
+    font-family: 'Libre Baskerville', serif;
+    transition: color 0.3s;
+  }
+  .nav-links a:hover { color: var(--gold-light); }
+  .btn-nav {
+    padding: 10px 24px;
+    background: linear-gradient(135deg, var(--gold), #a8720a);
+    color: var(--dark);
+    border-radius: 40px;
+    font-weight: 700;
+  }
+  .btn-nav:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(201,149,58,0.4); color: var(--dark); }
+  .btn-reserve-nav {
+    background: transparent;
+    border: 1px solid var(--gold);
+    color: var(--gold-light);
+    border-radius: 40px;
+  }
+  .btn-reserve-nav:hover { background: rgba(201,149,58,0.15); color: var(--gold-light); }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    background: var(--dark);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    position: relative; overflow: hidden;
+    text-align: center;
+  }
+  .hero-bg {
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 20% 50%, rgba(139,26,26,0.4) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 30%, rgba(201,149,58,0.15) 0%, transparent 50%);
+  }
+  .hero-ornament {
+    font-size: 1.2rem; color: var(--gold); letter-spacing: 8px;
+    margin-bottom: 24px; animation: fadeInDown 1s ease forwards;
+  }
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(3.5rem, 8vw, 7rem);
+    font-weight: 900; line-height: 1;
+    color: var(--cream);
+    animation: fadeInUp 1s ease 0.2s both;
+  }
+  .hero h1 em {
+    font-style: italic; color: var(--gold-light);
+    display: block; font-size: 0.6em;
+  }
+  .hero-tagline {
+    margin-top: 20px; font-size: 1.3rem;
+    color: rgba(245,237,216,0.65);
+    font-style: italic;
+    animation: fadeInUp 1s ease 0.4s both;
+  }
+  .hero-divider {
+    width: 120px; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    margin: 30px auto;
+    animation: fadeIn 1s ease 0.6s both;
+  }
+  .hero-cta {
+    margin-top: 40px;
+    display: flex; gap: 20px;
+    animation: fadeInUp 1s ease 1s both;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .btn-primary {
+    padding: 14px 40px;
+    background: var(--crimson);
+    color: var(--cream);
+    font-family: 'Libre Baskerville', serif;
+    font-size: 0.85rem; letter-spacing: 2px; text-transform: uppercase;
+    text-decoration: none;
+    transition: all 0.3s;
+    border: 1px solid var(--crimson);
+  }
+  .btn-primary:hover { background: var(--deep-crimson); border-color: var(--gold); }
+  .btn-outline {
+    padding: 14px 40px;
+    background: transparent;
+    color: var(--gold-light);
+    border: 1px solid var(--gold);
+    font-family: 'Libre Baskerville', serif;
+    font-size: 0.85rem; letter-spacing: 2px; text-transform: uppercase;
+    text-decoration: none;
+    transition: all 0.3s;
+  }
+  .btn-outline:hover { background: rgba(201,149,58,0.1); }
+  .btn-order-hero {
+    background: linear-gradient(135deg, #C9953A, #B8860B);
+    color: #1A0A00;
+    font-weight: 900;
+    border: none;
+  }
+  .btn-order-hero:hover { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(201,149,58,0.5); background: #d4a44a; }
+
+  .scroll-indicator {
+    position: absolute; bottom: 30px; left: 50%;
+    transform: translateX(-50%);
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    color: rgba(245,237,216,0.4);
+    animation: bounce 2s infinite;
+  }
+  .scroll-arrow { width: 20px; height: 20px; border-right: 1px solid currentColor; border-bottom: 1px solid currentColor; transform: rotate(45deg); }
+
+  /* ABOUT SECTION */
+  .about {
+    padding: 120px 60px;
+    background: var(--cream);
+    display: grid; grid-template-columns: 1fr 1fr; gap: 80px;
+    align-items: center;
+  }
+  .section-label {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 0.7rem; letter-spacing: 5px; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 16px;
+  }
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    font-weight: 700; line-height: 1.2;
+    color: var(--deep-crimson);
+    margin-bottom: 24px;
+  }
+  .section-title em { font-style: italic; color: var(--crimson); }
+  .about-body {
+    font-size: 1.15rem; line-height: 1.9;
+    color: var(--text-muted);
+    margin-bottom: 32px;
+  }
+  .about-stats {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+    border-top: 1px solid rgba(201,149,58,0.3);
+    padding-top: 32px;
+  }
+  .stat { text-align: center; }
+  .stat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.5rem; font-weight: 900;
+    color: var(--crimson);
+  }
+  .stat-label {
+    font-size: 0.75rem; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--text-muted);
+  }
+  .about-card {
+    background: var(--dark);
+    padding: 60px 50px;
+    text-align: center;
+    position: relative;
+  }
+  .about-card::before {
+    content: '';
+    position: absolute; inset: 8px;
+    border: 1px solid rgba(201,149,58,0.4);
+    pointer-events: none;
+  }
+  .about-card h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem; color: var(--gold-light);
+    margin-bottom: 12px;
+  }
+  .about-card p { color: rgba(245,237,216,0.6); font-style: italic; line-height: 1.8; }
+
+  /* MENU SECTION */
+  .menu-section {
+    padding: 120px 60px;
+    background: var(--dark);
+  }
+  .menu-header { text-align: center; margin-bottom: 64px; }
+  .menu-header .section-title { color: var(--cream); }
+  .menu-subtitle {
+    font-size: 1.1rem; color: rgba(245,237,216,0.5);
+    font-style: italic;
+  }
+  .menu-tabs {
+    display: flex; justify-content: center; gap: 0;
+    margin-bottom: 48px; flex-wrap: wrap;
+  }
+  .tab {
+    padding: 12px 28px;
+    background: transparent; border: 1px solid rgba(201,149,58,0.3);
+    color: rgba(245,237,216,0.5);
+    font-family: 'Libre Baskerville', serif;
+    font-size: 0.8rem; letter-spacing: 2px; text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  .tab:hover, .tab.active {
+    background: var(--crimson); border-color: var(--crimson);
+    color: var(--cream);
+  }
+  .menu-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2px;
+  }
+  .menu-item {
+    background: rgba(255,255,255,0.03);
+    padding: 20px 28px;
+    display: flex; justify-content: space-between;
+    border: 1px solid rgba(201,149,58,0.08);
+  }
+  .menu-item-name { font-size: 1rem; color: var(--cream); }
+  .menu-item-price { font-family: 'Playfair Display', serif; font-weight: 700; color: var(--gold); }
+
+  /* REVIEWS */
+  .reviews {
+    padding: 120px 60px;
+    background: var(--warm-white);
+  }
+  .reviews-header { text-align: center; margin-bottom: 64px; }
+  .reviews-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 24px;
+  }
+  .review-card {
+    background: var(--cream);
+    padding: 36px 32px;
+    border-top: 3px solid var(--gold);
+  }
+  .review-stars { color: var(--gold); margin-bottom: 16px; }
+  .review-text { font-size: 1rem; line-height: 1.8; color: var(--text-muted); font-style: italic; margin-bottom: 20px; }
+  .review-author { font-family: 'Libre Baskerville', serif; font-size: 0.8rem; color: var(--crimson); font-weight: 700; }
+
+  /* CONTACT */
+  .contact {
+    padding: 120px 60px;
+    background: var(--dark);
+    display: grid; grid-template-columns: 1fr 1fr; gap: 80px;
+  }
+  .contact-info .section-title { color: var(--cream); }
+  .contact-details { margin-top: 40px; display: flex; flex-direction: column; gap: 28px; }
+  .contact-item { display: flex; gap: 20px; align-items: flex-start; }
+  .contact-icon {
+    width: 48px; height: 48px;
+    border: 1px solid rgba(201,149,58,0.4);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.2rem;
+    color: var(--gold);
+  }
+  .contact-text-label {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 0.65rem; letter-spacing: 3px;
+    color: var(--text-muted);
+  }
+  .contact-text-value { font-size: 1rem; color: var(--cream); }
+  .contact-map {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(201,149,58,0.2);
+    padding: 48px;
+    text-align: center;
+  }
+  .map-embed { width: 100%; height: 250px; border: 0; }
+
+  footer {
+    background: var(--deep-crimson);
+    padding: 40px 60px;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+  .footer-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem; font-weight: 900; color: var(--gold-light);
+  }
+  .footer-copy { font-size: 0.8rem; color: rgba(245,237,216,0.4); }
+
+  @keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes bounce {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(8px); }
+  }
+  @media (max-width: 768px) {
+    nav { padding: 16px 24px; }
+    .nav-links { gap: 12px; }
+    .hero h1 { font-size: 2.5rem; }
+    .about, .contact { grid-template-columns: 1fr; padding: 60px 24px; }
+    .menu-section, .reviews { padding: 60px 24px; }
+    footer { padding: 30px 24px; flex-direction: column; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">HOTEL <span>Aahvanam</span></div>
+  <ul class="nav-links">
+    <li><a href="#about">Our Story</a></li>
+    <li><a href="#menu">Menu</a></li>
+    <li><a href="#reviews">Reviews</a></li>
+    <li><a href="#contact">Visit Us</a></li>
+    <li><a href="reservation.html" class="btn-reserve-nav">📅 Book a Table</a></li>
+    <li><a href="order-online.html" class="btn-nav">🍽️ ORDER ONLINE</a></li>
+  </ul>
+</nav>
+
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div style="position:relative; z-index:1;">
+    <div class="hero-ornament">✦ &nbsp;&nbsp; EST. 1953 &nbsp;&nbsp; ✦</div>
+    <h1>HOTEL<br><em>Aahvanam</em></h1>
+    <p class="hero-tagline">The Soul of Hyderabadi Cuisine, Served for Generations</p>
+    <div class="hero-divider"></div>
+    <div class="hero-cta">
+      <a href="#menu" class="btn-primary">Explore Menu</a>
+      <a href="order-online.html" class="btn-outline btn-order-hero">🛵 ORDER ONLINE →</a>
+      <a href="reservation.html" class="btn-outline">📅 Book a Table</a>
+    </div>
+  </div>
+  <div class="scroll-indicator">
+    <span>Scroll</span>
+    <div class="scroll-arrow"></div>
+  </div>
+</section>
+
+<section class="about" id="about">
+  <div class="about-text">
+    <div class="section-label">✦ Our Story</div>
+    <h2 class="section-title">A Culinary <em>Legend</em><br>of Palakollu</h2>
+    <p class="about-body">
+      Nestled in Venkateswara Colony, Aahvanam hotel has been the definitive address for authentic Hyderabadi cuisine. What began as a humble eatery has grown into one of the region's most beloved culinary institutions — a place where every dish carries the weight of tradition.
+    </p>
+    <p class="about-body">
+      From our signature dum biryani slow-cooked with aromatic spices, to our legendary kebabs and rich curries — every plate tells the story of royal culinary heritage.
+    </p>
+    <div class="about-stats">
+      <div class="stat"><span class="stat-num">70+</span><span class="stat-label">Years of Legacy</span></div>
+      <div class="stat"><span class="stat-num">100+</span><span class="stat-label">Dishes on Menu</span></div>
+      <div class="stat"><span class="stat-num">★ 4.3</span><span class="stat-label">Rating</span></div>
+    </div>
+  </div>
+  <div class="about-visual">
+    <div class="about-card">
+      <h3>Dum Pukht Biryani</h3>
+      <p>Slow-cooked in the ancient dum style, sealed with dough, our biryani is a symphony of fragrant basmati rice, tender meat, and hand-ground spices.</p>
+    </div>
+  </div>
+</section>
+
+<section class="menu-section" id="menu">
+  <div class="menu-header">
+    <div class="section-label">✦ Our Offerings</div>
+    <h2 class="section-title">The <em>Menu</em></h2>
+    <p class="menu-subtitle">A rich selection of Hyderabadi classics & specialties</p>
+  </div>
+  <div class="menu-tabs">
+    <button class="tab active" onclick="showTab('biryani')">Biryani</button>
+    <button class="tab" onclick="showTab('starters')">Starters</button>
+    <button class="tab" onclick="showTab('curries')">Curries</button>
+    <button class="tab" onclick="showTab('desserts')">Desserts</button>
+  </div>
+  <div class="menu-grid" id="menu-grid"></div>
+  <div style="text-align: center; margin-top: 48px;">
+    <a href="order-online.html" class="btn-primary" style="background: var(--gold); color: var(--dark); border: none;">📖 View Full Menu & Order Online →</a>
+  </div>
+</section>
+
+<section class="reviews" id="reviews">
+  <div class="reviews-header">
+    <div class="section-label">✦ What Guests Say</div>
+    <h2 class="section-title">Stories from <em>Our Table</em></h2>
+  </div>
+  <div class="reviews-grid">
+    <div class="review-card">
+      <div class="review-stars">★★★★★</div>
+      <p class="review-text">"The biryani is rich, aromatic, perfectly spiced — exactly what authentic Hyderabadi biryani should taste like."</p>
+      <div class="review-author">Shaista Suleman</div>
+    </div>
+    <div class="review-card">
+      <div class="review-stars">★★★★★</div>
+      <p class="review-text">"Aahvanam hotel is truly one of the culinary legends. One of those rare places that has maintained the same incredible taste for years."</p>
+      <div class="review-author">Zubair Mohammed</div>
+    </div>
+    <div class="review-card">
+      <div class="review-stars">★★★★★</div>
+      <p class="review-text">"The restaurant offers authentic Hyderabadi cuisine. Comfortable AC seating available upstairs."</p>
+      <div class="review-author">Alexander Wacker</div>
+    </div>
+  </div>
+</section>
+
+<section class="contact" id="contact">
+  <div class="contact-info">
+    <div class="section-label">✦ Find Us</div>
+    <h2 class="section-title">Visit <em>Aahvanam Hotel</em></h2>
+    <div class="contact-details">
+      <div class="contact-item">
+        <div class="contact-icon">📍</div>
+        <div><div class="contact-text-label">Address</div><div class="contact-text-value">Venkateswara Colony, Bypass Road, Palakollu, Andhra Pradesh 534260</div></div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-icon">⏰</div>
+        <div><div class="contact-text-label">Hours</div><div class="contact-text-value">Open Daily · Closes 12 AM</div></div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-icon">📞</div>
+        <div><div class="contact-text-label">Phone</div><div class="contact-text-value"><a href="tel:09642421990" style="color:var(--gold-light);">096424 21990</a></div></div>
+      </div>
+    </div>
+  </div>
+  <div class="contact-map">
+    <iframe class="map-embed" src="https://maps.google.com/maps?q=Venkateswara%20Colony%20Palakollu%20Andhra%20Pradesh&t=&z=15&ie=UTF8&iwloc=&output=embed" allowfullscreen="" loading="lazy"></iframe>
+    <p style="margin-top: 16px; color: var(--gold-light);">📍 View on Google Maps</p>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-logo">Aahvanam Hotel</div>
+  <div class="footer-copy">© 2025 Aahvanam Hotel. Authentic Since 1953.</div>
+  <div><a href="order-online.html" style="color: var(--gold-light); text-decoration: none;">Order Online</a> | <a href="reservation.html" style="color: var(--gold-light); text-decoration: none;">Book a Table</a></div>
+</footer>
+
+<script>
+  const menuData = {
+    biryani: [
+      { name: 'Chicken Biryani', price: '₹385' }, { name: 'Mutton Biryani', price: '₹435' },
+      { name: 'Veg Biryani', price: '₹265' }, { name: 'Egg Biryani', price: '₹290' },
+      { name: 'Aahvanam Special Chicken Biryani', price: '₹455' }, { name: 'Prawn Biryani', price: '₹490' }
+    ],
+    starters: [
+      { name: 'Chicken 65', price: '₹380' }, { name: 'Chicken Lollipop', price: '₹450' },
+      { name: 'Paneer 65', price: '₹280' }, { name: 'Chilli Chicken', price: '₹390' },
+      { name: 'Gobi 65', price: '₹260' }, { name: 'Tandoori Chicken', price: '₹320' }
+    ],
+    curries: [
+      { name: 'Butter Chicken', price: '₹370' }, { name: 'Chicken Masala', price: '₹360' },
+      { name: 'Mutton Mughlai', price: '₹480' }, { name: 'Paneer Butter Masala', price: '₹270' },
+      { name: 'Dal Fry', price: '₹170' }, { name: 'Prawn Masala', price: '₹435' }
+    ],
+    desserts: [
+      { name: 'Haleem Single', price: '₹400' }, { name: 'Faluda', price: '₹140' },
+      { name: 'Lassi', price: '₹140' }, { name: 'Kaddu Ki Kheer', price: '₹160' },
+      { name: 'Gulab Jamun', price: '₹80' }, { name: 'Tea', price: '₹40' }
+    ]
+  };
+  function showTab(tab) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    event.target.classList.add('active');
+    const items = menuData[tab] || [];
+    document.getElementById('menu-grid').innerHTML = items.map(item => `
+      <div class="menu-item"><span class="menu-item-name">${item.name}</span><span class="menu-item-price">${item.price}</span></div>
+    `).join('');
+  }
+  showTab('biryani');
+</script>
+</body>
+</html>

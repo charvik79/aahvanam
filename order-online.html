@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>Order Online – Hotel Aahvanam | Palakollu Delivery</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --crimson: #8B1A1A;
+  --deep-crimson: #5C0E0E;
+  --gold: #C9953A;
+  --gold-light: #E8B96A;
+  --cream: #F5EDD8;
+  --warm-white: #FAF6EE;
+  --dark: #1A0A00;
+  --text-body: #3A1F0A;
+  --text-muted: #7A5C3A;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Cormorant Garamond', serif; background: var(--warm-white); color: var(--text-body); overflow: hidden; height: 100vh; }
+nav {
+  position: sticky; top: 0; z-index: 200;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 48px;
+  background: rgba(26,10,0,0.96);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(201,149,58,0.3);
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.nav-logo { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 900; color: var(--gold-light); text-decoration: none; }
+.nav-logo span { color: var(--cream); font-style: italic; }
+.nav-back { color: rgba(245,237,216,0.6); font-family: 'Libre Baskerville', serif; font-size: 0.75rem; text-decoration: none; }
+.nav-back:hover { color: var(--gold-light); }
+.order-hero {
+  background: var(--dark);
+  padding: 30px 48px;
+  text-align: center;
+}
+.order-hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(1.8rem, 5vw, 3rem); font-weight: 900; color: var(--cream); }
+.order-hero h1 em { font-style: italic; color: var(--gold-light); }
+.delivery-badge {
+  background: var(--crimson);
+  display: inline-block;
+  padding: 6px 20px;
+  border-radius: 40px;
+  font-size: 0.75rem;
+  margin-top: 12px;
+  color: var(--cream);
+}
+.order-layout { display: grid; grid-template-columns: 1fr 360px; gap: 0; height: calc(100vh - 160px); overflow: hidden; }
+.menu-panel { padding: 20px 30px; background: var(--warm-white); overflow-y: auto; }
+.cat-tabs { display: flex; gap: 0; flex-wrap: wrap; margin-bottom: 20px; border-bottom: 2px solid rgba(201,149,58,0.2); }
+.cat-tab {
+  padding: 8px 16px; background: transparent;
+  border: none; border-bottom: 3px solid transparent;
+  font-family: 'Libre Baskerville', serif; font-size: 0.65rem;
+  letter-spacing: 1px; text-transform: uppercase; color: var(--text-muted);
+  cursor: pointer;
+}
+.cat-tab.active { color: var(--crimson); border-bottom-color: var(--crimson); }
+.dish-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 10px; }
+.dish-card {
+  background: #fff;
+  border: 1px solid rgba(201,149,58,0.15);
+  padding: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 8px;
+}
+.dish-card:hover { border-color: rgba(201,149,58,0.4); box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+.dish-info { flex: 1; }
+.dish-name { font-family: 'Cormorant Garamond', serif; font-size: 0.95rem; font-weight: 600; }
+.dish-price { font-family: 'Playfair Display', serif; font-size: 0.85rem; font-weight: 700; color: var(--gold); margin-top: 3px; }
+.add-btn {
+  width: 30px; height: 30px; border-radius: 50%;
+  background: var(--dark); border: none;
+  color: var(--gold-light); font-size: 1.1rem;
+  cursor: pointer;
+}
+.qty-ctrl { display: flex; align-items: center; gap: 5px; }
+.qty-btn { width: 24px; height: 24px; border-radius: 50%; border: 1px solid rgba(201,149,58,0.4); background: transparent; cursor: pointer; }
+.qty-num { font-family: 'Playfair Display', serif; font-size: 0.85rem; font-weight: 700; color: var(--crimson); min-width: 20px; text-align: center; }
+
+/* Cart Panel */
+.cart-panel {
+  background: var(--dark);
+  height: 100%;
+  overflow-y: auto;
+  border-left: 1px solid rgba(201,149,58,0.2);
+}
+.cart-header { padding: 16px 20px; border-bottom: 1px solid rgba(201,149,58,0.15); }
+.cart-title { font-family: 'Playfair Display', serif; font-size: 1.2rem; color: var(--cream); }
+.cart-items { padding: 12px 20px; }
+.cart-empty { text-align: center; padding: 30px 0; color: rgba(245,237,216,0.3); font-size: 0.85rem; }
+.cart-item { display: flex; align-items: center; gap: 8px; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+.cart-item-name { flex: 1; font-size: 0.8rem; color: var(--cream); }
+.cart-item-price { font-family: 'Playfair Display', serif; font-size: 0.8rem; color: var(--gold); }
+.cart-footer { padding: 16px 20px; border-top: 1px solid rgba(201,149,58,0.15); }
+.cart-total-amt { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 900; color: var(--gold-light); }
+.place-order-btn {
+  width: 100%; padding: 12px;
+  background: linear-gradient(135deg, var(--gold), #a8720a);
+  color: var(--dark); border: none;
+  font-family: 'Playfair Display', serif; font-size: 0.95rem; font-weight: 700;
+  cursor: pointer; margin-top: 12px;
+  border-radius: 40px;
+}
+.place-order-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* Checkout Modal */
+.modal-overlay {
+  display: none; position: fixed; inset: 0; z-index: 1000;
+  background: rgba(0,0,0,0.85); backdrop-filter: blur(4px);
+  align-items: center; justify-content: center;
+}
+.modal-overlay.open { display: flex; }
+.modal-box {
+  background: white;
+  border-radius: 20px;
+  padding: 28px;
+  max-width: 480px;
+  width: 90%;
+  max-height: 85vh;
+  overflow-y: auto;
+}
+.modal-box h2 { font-family: 'Playfair Display', serif; color: var(--crimson); margin-bottom: 16px; font-size: 1.3rem; }
+.form-group { margin-bottom: 15px; }
+.form-group label { display: block; font-size: 0.65rem; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px; font-weight: bold; }
+.form-group input, .form-group select, .form-group textarea {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1.5px solid #E8DCC8;
+  border-radius: 10px;
+  font-size: 0.9rem;
+}
+.payment-options {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 8px 0;
+}
+.payment-option {
+  flex: 1;
+  padding: 10px;
+  border: 2px solid #E8DCC8;
+  border-radius: 10px;
+  text-align: center;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+.payment-option.selected {
+  border-color: var(--gold);
+  background: #FFF8E7;
+}
+.payment-option input { display: none; }
+.location-error { color: #c62828; font-size: 0.7rem; margin-top: 4px; }
+.btn-confirm {
+  width: 100%;
+  background: var(--crimson);
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: 40px;
+  font-size: 0.95rem;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 12px;
+}
+.close-modal { float: right; font-size: 22px; cursor: pointer; color: #999; }
+
+@media (max-width: 768px) {
+  nav { padding: 10px 16px; }
+  .order-hero { padding: 20px 16px; }
+  .order-layout { grid-template-columns: 1fr; height: auto; }
+  .cart-panel { position: fixed; bottom: 0; left: 0; right: 0; height: auto; max-height: 45vh; z-index: 100; border-top: 2px solid var(--gold); }
+  .menu-panel { padding-bottom: 280px; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">HOTEL <span>Aahvanam</span></a>
+  <a href="index.html" class="nav-back">← Back to Website</a>
+</nav>
+
+<div class="order-hero">
+  <h1>Order <em>Online</em></h1>
+  <div class="delivery-badge">📍 Delivery Only in Palakollu, Andhra Pradesh</div>
+</div>
+
+<div class="order-layout">
+  <div class="menu-panel">
+    <div class="cat-tabs" id="cat-tabs"></div>
+    <div class="dish-grid" id="dish-grid"></div>
+  </div>
+
+  <div class="cart-panel">
+    <div class="cart-header">
+      <div class="cart-title">Your Order</div>
+    </div>
+    <div class="cart-items" id="cart-items">
+      <div class="cart-empty">🍽️ Your cart is empty.<br>Add your favourite dishes!</div>
+    </div>
+    <div class="cart-footer">
+      <div class="cart-total-amt" id="cart-total">₹0</div>
+      <button class="place-order-btn" id="place-order-btn" disabled>Proceed to Checkout →</button>
+    </div>
+  </div>
+</div>
+
+<!-- Checkout Modal -->
+<div class="modal-overlay" id="checkout-modal">
+  <div class="modal-box">
+    <span class="close-modal" onclick="closeCheckout()">&times;</span>
+    <h2>📋 Complete Your Order</h2>
+    
+    <div class="form-group">
+      <label>👤 Full Name *</label>
+      <input type="text" id="custName" placeholder="Enter your full name">
+    </div>
+    
+    <div class="form-group">
+      <label>📞 Phone Number *</label>
+      <input type="tel" id="custPhone" placeholder="+91 XXXXX XXXXX">
+    </div>
+    
+    <div class="form-group">
+      <label>📍 Delivery Address *</label>
+      <textarea id="custAddress" rows="2" placeholder="Full address in Palakollu, Andhra Pradesh"></textarea>
+      <div id="locationError" class="location-error"></div>
+    </div>
+    
+    <div class="form-group">
+      <label>💰 Payment Method *</label>
+      <div class="payment-options">
+        <label class="payment-option" onclick="selectPayment('cod', this)">
+          💵 Cash on Delivery
+          <input type="radio" name="payment" value="Cash on Delivery">
+        </label>
+        <label class="payment-option" onclick="selectPayment('paytm', this)">
+          📱 PayTM / UPI
+          <input type="radio" name="payment" value="PayTM / UPI">
+        </label>
+        <label class="payment-option" onclick="selectPayment('gpay', this)">
+          🏦 Google Pay
+          <input type="radio" name="payment" value="Google Pay">
+        </label>
+        <label class="payment-option" onclick="selectPayment('phonepe', this)">
+          📲 PhonePe
+          <input type="radio" name="payment" value="PhonePe">
+        </label>
+      </div>
+    </div>
+    
+    <div class="form-group">
+      <label>📝 Special Instructions (Optional)</label>
+      <textarea id="custInstructions" rows="2" placeholder="Any special requests..."></textarea>
+    </div>
+    
+    <button type="button" class="btn-confirm" onclick="proceedToChat()">✅ Confirm & Continue →</button>
+  </div>
+</div>
+
+<script>
+// MENU DATA
+const MENU = {
+  'Biryani': [
+    { name: 'Veg Biryani', price: 265 }, { name: 'Chicken Biryani', price: 385 },
+    { name: 'Mutton Biryani', price: 435 }, { name: 'Egg Biryani', price: 290 },
+    { name: 'Prawn Biryani', price: 490 }, { name: 'Chicken Family Pack', price: 1140 }
+  ],
+  'Starters': [
+    { name: 'Chicken 65', price: 380 }, { name: 'Chicken Lollipop', price: 450 },
+    { name: 'Gobi 65', price: 260 }, { name: 'Paneer 65', price: 280 },
+    { name: 'Chilli Chicken', price: 390 }, { name: 'Tandoori Chicken', price: 320 }
+  ],
+  'Curries': [
+    { name: 'Butter Chicken', price: 370 }, { name: 'Chicken Masala', price: 360 },
+    { name: 'Mutton Masala', price: 480 }, { name: 'Paneer Butter Masala', price: 270 },
+    { name: 'Dal Fry', price: 170 }, { name: 'Prawn Masala', price: 435 }
+  ],
+  'Rice & Noodles': [
+    { name: 'Chicken Fried Rice', price: 255 }, { name: 'Veg Fried Rice', price: 220 },
+    { name: 'Egg Fried Rice', price: 230 }, { name: 'Veg Chowmein', price: 235 }
+  ],
+  'Breads': [
+    { name: 'Butter Naan', price: 85 }, { name: 'Garlic Naan', price: 75 },
+    { name: 'Tandoori Roti', price: 30 }, { name: 'Lachha Paratha', price: 70 }
+  ],
+  'Desserts': [
+    { name: 'Gulab Jamun', price: 80 }, { name: 'Lassi', price: 140 },
+    { name: 'Faluda', price: 140 }, { name: 'Tea', price: 40 }
+  ]
+};
+
+let cart = {};
+let activeCategory = 'Biryani';
+
+function itemKey(cat, name) { return cat + '::' + name; }
+
+function renderTabs() {
+  const tabs = document.getElementById('cat-tabs');
+  tabs.innerHTML = Object.keys(MENU).map(cat => `
+    <button class="cat-tab ${cat === activeCategory ? 'active' : ''}" onclick="switchCat('${cat}')">${cat}</button>
+  `).join('');
+}
+
+function switchCat(cat) {
+  activeCategory = cat;
+  renderTabs();
+  renderDishes();
+}
+
+function renderDishes() {
+  const grid = document.getElementById('dish-grid');
+  const dishes = MENU[activeCategory] || [];
+  grid.innerHTML = dishes.map(d => {
+    const key = itemKey(activeCategory, d.name);
+    const qty = cart[key] ? cart[key].qty : 0;
+    return `
+      <div class="dish-card">
+        <div class="dish-info">
+          <div class="dish-name">${d.name}</div>
+          <div class="dish-price">₹${d.price}</div>
+        </div>
+        ${qty === 0
+          ? `<button class="add-btn" onclick="addToCart('${activeCategory}','${d.name.replace(/'/g,"\\'")}',${d.price})">+</button>`
+          : `<div class="qty-ctrl">
+               <button class="qty-btn" onclick="changeQty('${key}',-1)">−</button>
+               <span class="qty-num">${qty}</span>
+               <button class="qty-btn" onclick="changeQty('${key}',1)">+</button>
+             </div>`
+        }
+      </div>`;
+  }).join('');
+}
+
+function addToCart(cat, name, price) {
+  const key = itemKey(cat, name);
+  if (cart[key]) cart[key].qty++;
+  else cart[key] = { name, price, qty: 1 };
+  renderDishes();
+  renderCart();
+}
+
+function changeQty(key, delta) {
+  if (!cart[key]) return;
+  cart[key].qty += delta;
+  if (cart[key].qty <= 0) delete cart[key];
+  renderDishes();
+  renderCart();
+}
+
+function renderCart() {
+  const container = document.getElementById('cart-items');
+  const totalEl = document.getElementById('cart-total');
+  const btn = document.getElementById('place-order-btn');
+  const keys = Object.keys(cart);
+
+  if (keys.length === 0) {
+    container.innerHTML = `<div class="cart-empty">🍽️ Your cart is empty.<br>Add your favourite dishes!</div>`;
+    totalEl.textContent = '₹0';
+    btn.disabled = true;
+    return;
+  }
+
+  let total = 0;
+  container.innerHTML = keys.map(key => {
+    const item = cart[key];
+    const subtotal = item.price * item.qty;
+    total += subtotal;
+    return `<div class="cart-item">
+      <div class="cart-item-name">${item.name} × ${item.qty}</div>
+      <div class="cart-item-price">₹${subtotal}</div>
+    </div>`;
+  }).join('');
+
+  totalEl.textContent = '₹' + total;
+  btn.disabled = false;
+}
+
+function validateAddress(address) {
+  const lowerAddr = address.toLowerCase();
+  return lowerAddr.includes('palakollu') || lowerAddr.includes('palakol');
+}
+
+function selectPayment(method, element) {
+  document.querySelectorAll('.payment-option').forEach(opt => opt.classList.remove('selected'));
+  element.classList.add('selected');
+  element.querySelector('input').checked = true;
+}
+
+function closeCheckout() {
+  document.getElementById('checkout-modal').classList.remove('open');
+}
+
+function openCheckout() {
+  if (Object.keys(cart).length === 0) return;
+  document.getElementById('custName').value = '';
+  document.getElementById('custPhone').value = '';
+  document.getElementById('custAddress').value = '';
+  document.getElementById('custInstructions').value = '';
+  document.getElementById('locationError').innerHTML = '';
+  document.querySelectorAll('.payment-option').forEach(opt => opt.classList.remove('selected'));
+  document.getElementById('checkout-modal').classList.add('open');
+}
+
+function proceedToChat() {
+  const name = document.getElementById('custName').value.trim();
+  const phone = document.getElementById('custPhone').value.trim();
+  const address = document.getElementById('custAddress').value.trim();
+  const instructions = document.getElementById('custInstructions').value.trim();
+  const paymentRadio = document.querySelector('input[name="payment"]:checked');
+  const paymentMethod = paymentRadio ? paymentRadio.value : null;
+  
+  if (!name) { alert('Please enter your name'); return; }
+  if (!phone) { alert('Please enter your phone number'); return; }
+  if (phone.length < 10) { alert('Please enter a valid phone number'); return; }
+  if (!address) { alert('Please enter your delivery address'); return; }
+  if (!validateAddress(address)) {
+    document.getElementById('locationError').innerHTML = '❌ Sorry, we only deliver in Palakollu!';
+    return;
+  }
+  if (!paymentMethod) { alert('Please select a payment method'); return; }
+  
+  // Calculate total
+  let total = 0;
+  let itemsList = [];
+  Object.keys(cart).forEach(key => {
+    const item = cart[key];
+    total += item.price * item.qty;
+    itemsList.push(`${item.name} x${item.qty} = ₹${item.price * item.qty}`);
+  });
+  
+  // Save data to sessionStorage for chatbot
+  const orderData = {
+    name, phone, address, instructions, paymentMethod,
+    items: itemsList,
+    itemsArray: cart,
+    total: total,
+    orderTime: new Date().toISOString()
+  };
+  sessionStorage.setItem('pendingOrder', JSON.stringify(orderData));
+  
+  // Open chatbot page
+  window.location.href = 'chatbot.html';
+}
+
+document.getElementById('place-order-btn').addEventListener('click', openCheckout);
+
+renderTabs();
+renderDishes();
+renderCart();
+</script>
+</body>
+</html>

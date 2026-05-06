@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>Order Confirmation – Hotel Aahvanam</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background: #E5E5E5;
+    height: 100vh;
+    overflow: hidden;
+  }
+  
+  .chat-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    max-width: 500px;
+    margin: 0 auto;
+    background: #E5E5E5;
+    position: relative;
+  }
+  
+  /* Header */
+  .chat-header {
+    background: #075E54;
+    color: white;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+  }
+  .back-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+  }
+  .restaurant-info {
+    flex: 1;
+  }
+  .restaurant-info h3 {
+    font-size: 16px;
+  }
+  .restaurant-info p {
+    font-size: 12px;
+    opacity: 0.8;
+  }
+  .online-dot {
+    width: 10px;
+    height: 10px;
+    background: #25D366;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 6px;
+  }
+  
+  /* Messages Area */
+  .chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" opacity="0.03"><path d="M10,50 L90,50 M50,10 L50,90" stroke="black" stroke-width="1"/></svg>');
+  }
+  .message {
+    max-width: 80%;
+    padding: 10px 14px;
+    border-radius: 18px;
+    font-size: 14px;
+    line-height: 1.4;
+    animation: fadeIn 0.3s ease;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .message.received {
+    background: white;
+    align-self: flex-start;
+    border-bottom-left-radius: 4px;
+  }
+  .message.sent {
+    background: #DCF8C6;
+    align-self: flex-end;
+    border-bottom-right-radius: 4px;
+  }
+  .message-time {
+    font-size: 10px;
+    color: #999;
+    margin-top: 4px;
+    text-align: right;
+  }
+  .typing-indicator {
+    background: white;
+    padding: 10px 16px;
+    border-radius: 18px;
+    align-self: flex-start;
+    font-size: 12px;
+    color: #666;
+  }
+  .typing-indicator span {
+    animation: blink 1.4s infinite;
+  }
+  @keyframes blink {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 1; }
+  }
+  
+  /* Input Area */
+  .chat-input-area {
+    background: white;
+    padding: 12px 16px;
+    display: flex;
+    gap: 10px;
+    border-top: 1px solid #ddd;
+    flex-shrink: 0;
+  }
+  .chat-input-area input {
+    flex: 1;
+    padding: 12px 16px;
+    border: 1px solid #ddd;
+    border-radius: 25px;
+    font-size: 14px;
+    outline: none;
+  }
+  .chat-input-area input:focus {
+    border-color: #075E54;
+  }
+  .chat-input-area button {
+    background: #075E54;
+    color: white;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  
+  @media (max-width: 500px) {
+    .message { max-width: 85%; }
+  }
+</style>
+</head>
+<body>
+<div class="chat-container">
+  <div class="chat-header">
+    <a href="order-online.html" class="back-btn">←</a>
+    <div class="restaurant-info">
+      <h3><span class="online-dot"></span> Hotel Aahvanam</h3>
+      <p>Online • Usually replies instantly</p>
+    </div>
+  </div>
+  <div class="chat-messages" id="chatMessages"></div>
+  <div class="chat-input-area">
+    <input type="text" id="chatInput" placeholder="Type your message..." onkeypress="if(event.key==='Enter') sendMessage()">
+    <button onclick="sendMessage()">Send</button>
+  </div>
+</div>
+
+<script>
+  // Chatbot state
+  let waitingForConfirmation = false;
+  let waitingForCancelReason = false;
+  let orderConfirmed = false;
+  let orderData = null;
+  
+  function addMessage(text, isSent = false) {
+    const messagesDiv = document.getElementById('chatMessages');
+    const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `message ${isSent ? 'sent' : 'received'}`;
+    messageDiv.innerHTML = `
+      ${text}
+      <div class="message-time">${time}</div>
+    `;
+    messagesDiv.appendChild(messageDiv);
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+  }
+  
+  function showTyping() {
+    const messagesDiv = document.getElementById('chatMessages');
+    const typingDiv = document.createElement('div');
+    typingDiv.className = 'typing-indicator';
+    typingDiv.id = 'typingIndicator';
+    typingDiv.innerHTML = 'Hotel Aahvanam is typing<span>.</span><span>.</span><span>.</span>';
+    messagesDiv.appendChild(typingDiv);
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+  }
+  
+  function removeTyping() {
+    const indicator = document.getElementById('typingIndicator');
+    if (indicator) indicator.remove();
+  }
+  
+  function saveOrder() {
+    const orders = JSON.parse(localStorage.getItem('aahvanam_orders') || '[]');
+    const newOrder = {
+      id: Date.now(),
+      custName: orderData.name,
+      custPhone: orderData.phone,
+      address: orderData.address,
+      instructions: orderData.instructions || '',
+      paymentMethod: orderData.paymentMethod,
+      itemsArray: orderData.itemsArray,
+      total: orderData.total,
+      orderTime: orderData.orderTime,
+      status: 'confirmed'
+    };
+    orders.unshift(newOrder);
+    localStorage.setItem('aahvanam_orders', JSON.stringify(orders));
+  }
+  
+  function processReply(message) {
+    const lowerMsg = message.toLowerCase().trim();
+    
+    // Waiting for cancel reason
+    if (waitingForCancelReason) {
+      addMessage(`Thank you for your feedback. We have cancelled your order.`, false);
+      addMessage(`Reason: "${message}"`, false);
+      addMessage(`You can place a new order anytime! 😊`, false);
+      waitingForCancelReason = false;
+      waitingForConfirmation = false;
+      return;
+    }
+    
+    // Waiting for confirmation
+    if (waitingForConfirmation) {
+      const yesWords = ['yes', 'yeah', 'yep', 'ya', 'sure', 'confirm', 'ok', 'okay', 'y', 'yea', 'correct', 'right', '1', 'confirm order'];
+      const noWords = ['no', 'nah', 'nope', 'cancel', 'not', 'never', 'n', '0', 'cancel order'];
+      
+      if (yesWords.some(word => lowerMsg === word || lowerMsg.includes(word))) {
+        addMessage(`✅ ORDER CONFIRMED! Thank you ${orderData.name}.`, false);
+        addMessage(`Your order has been received and will be prepared soon.`, false);
+        addMessage(`📦 Order Details:`, false);
+        orderData.items.forEach(item => {
+          addMessage(`   • ${item}`, false);
+        });
+        addMessage(`📞 Delivery to: ${orderData.address.substring(0, 50)}`, false);
+        addMessage(`💰 Payment: ${orderData.paymentMethod}`, false);
+        addMessage(`⏰ Estimated delivery: 30-45 minutes`, false);
+        addMessage(`Thank you for ordering from Hotel Aahvanam! 🍛`, false);
+        addMessage(`We will call you on ${orderData.phone} before delivery.`, false);
+        waitingForConfirmation = false;
+        orderConfirmed = true;
+        
+        // Save order to localStorage
+        saveOrder();
+        return;
+      } 
+      else if (noWords.some(word => lowerMsg === word || lowerMsg.includes(word))) {
+        addMessage(`I understand you want to cancel your order.`, false);
+        addMessage(`Could you please tell us the reason for cancellation?`, false);
+        waitingForCancelReason = true;
+      }
+      else {
+        addMessage(`I didn't understand. Please reply with "YES" to confirm your order or "NO" to cancel.`, false);
+      }
+      return;
+    }
+  }
+  
+  function sendMessage() {
+    const input = document.getElementById('chatInput');
+    const message = input.value.trim();
+    if (!message) return;
+    
+    addMessage(message, true);
+    input.value = '';
+    
+    showTyping();
+    setTimeout(() => {
+      removeTyping();
+      processReply(message);
+    }, 1000);
+  }
+  
+  // Load order data and start chat
+  function initChat() {
+    const pendingOrder = sessionStorage.getItem('pendingOrder');
+    if (!pendingOrder) {
+      addMessage("Hello! Welcome to Hotel Aahvanam. You don't have any pending order. Please go back and place an order.", false);
+      return;
+    }
+    
+    orderData = JSON.parse(pendingOrder);
+    sessionStorage.removeItem('pendingOrder');
+    
+    // Clear cart from session
+    sessionStorage.removeItem('pendingOrder');
+    
+    // Start the conversation
+    setTimeout(() => {
+      addMessage(`Hello ${orderData.name}! 👋 Welcome to Hotel Aahvanam.`, false);
+      setTimeout(() => {
+        addMessage(`Thank you for ordering with us. Here's your order summary:`, false);
+        setTimeout(() => {
+          addMessage(`━━━━━━━━━━━━━━━━━━━━`, false);
+          orderData.items.forEach(item => {
+            addMessage(`• ${item}`, false);
+          });
+          setTimeout(() => {
+            addMessage(`━━━━━━━━━━━━━━━━━━━━`, false);
+            addMessage(`📦 *Total Amount: ₹${orderData.total}*`, false);
+            addMessage(`📍 Delivery to: ${orderData.address.substring(0, 50)}`, false);
+            addMessage(`💰 Payment: ${orderData.paymentMethod}`, false);
+            addMessage(``, false);
+            addMessage(`⚠️ *PLEASE CONFIRM YOUR ORDER*`, false);
+            addMessage(`Type "YES" to confirm your order.`, false);
+            addMessage(`Type "NO" to cancel.`, false);
+            
+            waitingForConfirmation = true;
+          }, 300);
+        }, 300);
+      }, 300);
+    }, 300);
+  }
+  
+  // Make sendMessage global
+  window.sendMessage = sendMessage;
+  
+  // Start the chat
+  initChat();
+</script>
+</body>
+</html>
